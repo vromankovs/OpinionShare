@@ -1,5 +1,7 @@
 package lv.akurss.opinionshare.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -33,6 +35,7 @@ public class Opinion {
 
 	@ManyToOne
 	@JoinColumn(name = "topic_id")
+	@JsonIgnore
 	private Topic topic;
 
 	public Long getId() {

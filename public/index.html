@@ -22,6 +22,58 @@
 				<button class="btn btn-primary btn-block" id="add-topic">Add topic</button>
 			</div>
 		</div>
+		
+		<div class="row my-3" id="topics">
+			
+			
+		</div>
+	</div>
+
+
+	<div id="alert" class="alert alert-success alert-dismissible fade" role="alert">
+		<b>New entry has been added!</b>
+		<button type="button" class="close" data-dismiss="alert">
+			<span>&times;</span>
+		</button>
+	</div>
+	
+	
+	<div id="templates" class="d-none">
+		
+		<div id="topic-template" class="col-12">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="mb-0">
+						<button class="btn btn-link" 
+								data-toggle="collapse" 
+								data-target="#collapse-{topicId}"
+								onclick="refreshOpinions({topicId})">
+							{topicTitle}
+						</button>
+					</h5>
+				</div>
+				<div class="collapse" id="collapse-{topicId}">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-6">
+								<input class="form-control" id="opinion-input-{topicId}">
+							</div>
+							<div class="col-6">
+								<button class="btn btn-success" onclick="addOpinion({topicId})">Add opinion</button>
+							</div>
+						</div>
+						<div class="row my-3" id="opinions-{topicId}">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="opinion-template" class="col-12">
+			<p>{opinionTitle}</p>
+		</div>
+		
 	</div>
 	
 
@@ -33,7 +85,7 @@
 		$("#add-topic").click(function() {
 			var input = $("#topic-input").val();
 			
-			if (input === "") {
+			if (input.trim() === "") {
 				return;
 			}
 			
@@ -45,11 +97,73 @@
 			
 			$.post("/topic", topicJSON, function(data) {
 				$("#topic-input").val("");
-				
-				alert("topic saved");
+
+				showAlert();
+				refresh();
 			});
 		});
 		
+		function addOpinion(topicId) {
+			var input = $("#opinion-input-" + topicId).val();
+
+			if (input.trim() === "") {
+				return;
+			}
+
+			var opinion = {
+				body: input
+			};
+
+			var opinionJSON = JSON.stringify(opinion);
+
+			$.post("/opinion/" + topicId, opinionJSON, function(data) {
+				$("#opinion-input-" + topicId).val("");
+
+				showAlert();
+				refreshOpinions(topicId);
+			});
+		}
+		
+		
+		function refresh() {
+			$.get("/topic", function(data) {
+				$("#topics").empty();
+				
+				$.each(data, function(idx, value) {
+					
+					var copy = $("#templates #topic-template").clone();
+					var copyHtml = copy.prop("outerHTML");
+					copyHtml = copyHtml.replace(/{topicTitle}/g, value.body);
+					copyHtml = copyHtml.replace(/{topicId}/g, value.id);
+					
+					$(copyHtml).appendTo("#topics");
+				})
+			});
+		}
+
+		function refreshOpinions(topicId) {
+			$.get("/opinion/" + topicId, function(data) {
+				$("#opinions-" + topicId).empty();
+
+				$.each(data, function(idx, value) {
+
+					var copy = $("#templates #opinion-template").clone();
+					var copyHtml = copy.prop("outerHTML");
+					copyHtml = copyHtml.replace(/{opinionTitle}/g, value.body);
+
+					$(copyHtml).appendTo("#opinions-" + topicId);
+				})
+			});
+		}
+		
+		function showAlert() {
+			$("#alert").toggleClass("show");
+			setTimeout(function() {
+				$("#alert").toggleClass("show");
+			}, 3000);
+		}
+		
+		refresh();
 		
 	</script>
 </body>

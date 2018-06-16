@@ -5,6 +5,7 @@ import lv.akurss.opinionshare.model.User;
 import lv.akurss.opinionshare.repository.RoleRepository;
 import lv.akurss.opinionshare.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +23,9 @@ public class UserController {
 	@Autowired
 	RoleRepository roleRepository;
 	
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	@RequestMapping(path = "/user", method = RequestMethod.POST)
 	public void createNewUser(@RequestBody User user) {
 		Role defaultRole = roleRepository.findByRole("USER");
@@ -29,6 +33,7 @@ public class UserController {
 		Set<Role> roles = new HashSet<>();
 		roles.add(defaultRole);
 		
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		user.setRoles(roles);
 		
 		userRepository.save(user);

@@ -5,6 +5,8 @@ import lv.akurss.opinionshare.model.Topic;
 import lv.akurss.opinionshare.repository.OpinionRepository;
 import lv.akurss.opinionshare.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ public class OpinionController {
 		Optional<Topic> oTopic = topicRepository.findById(topicId);
 		
 		oTopic.ifPresent(topic -> {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			opinion.setAuthor(auth.getName());
 			opinion.setRating(0L);
 			opinion.setCreated(new Date());
 			opinion.setUpdated(new Date());

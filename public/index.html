@@ -43,15 +43,19 @@
 		<div id="topic-template" class="col-12">
 			<div class="card">
 				<div class="card-header">
-					<h5 class="mb-0">
-						<button class="btn btn-link" 
-								data-toggle="collapse" 
+
+
+					<div >
+						<button class="btn btn-link"
+								data-toggle="collapse"
 								data-target="#collapse-{topicId}"
 								onclick="refreshOpinions({topicId})">
 							{topicTitle}
 						</button>
-					</h5>
+						<small class="text-muted, float-right mt-2 ">By: {topicAuthor}</small>
+					</div>
 				</div>
+
 				<div class="collapse" id="collapse-{topicId}">
 					<div class="card-body">
 						<div class="row">
@@ -71,7 +75,10 @@
 		</div>
 		
 		<div id="opinion-template" class="col-12">
-			<p>{opinionTitle}</p>
+			<p class=mb-0">{opinionTitle}</p>
+			<p>
+				<small class="text-muted ">By: {opinionAuthor}</small>
+			</p>
 		</div>
 		
 	</div>
@@ -135,6 +142,7 @@
 					var copyHtml = copy.prop("outerHTML");
 					copyHtml = copyHtml.replace(/{topicTitle}/g, value.body);
 					copyHtml = copyHtml.replace(/{topicId}/g, value.id);
+					copyHtml = copyHtml.replace(/{topicAuthor}/g, value.author);
 					
 					$(copyHtml).appendTo("#topics");
 				})
@@ -150,6 +158,7 @@
 					var copy = $("#templates #opinion-template").clone();
 					var copyHtml = copy.prop("outerHTML");
 					copyHtml = copyHtml.replace(/{opinionTitle}/g, value.body);
+					copyHtml = copyHtml.replace(/{opinionAuthor}/g, value.author);
 
 					$(copyHtml).appendTo("#opinions-" + topicId);
 				})

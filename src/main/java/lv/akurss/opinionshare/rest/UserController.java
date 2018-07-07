@@ -4,6 +4,7 @@ import lv.akurss.opinionshare.model.Role;
 import lv.akurss.opinionshare.model.User;
 import lv.akurss.opinionshare.repository.RoleRepository;
 import lv.akurss.opinionshare.repository.UserRepository;
+import lv.akurss.opinionshare.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,9 @@ public class UserController {
 	
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Autowired
+	EmailService emailService;
 	
 	@RequestMapping(path = "/user", method = RequestMethod.POST)
 	public void createNewUser(@RequestBody User user) {
@@ -37,6 +41,8 @@ public class UserController {
 		user.setRoles(roles);
 		
 		userRepository.save(user);
+
+		emailService.sendMail(user.getEmail(), "Welcome to OpinionShare", "Hello, "+user.getName()+ "\n\nNice to meet you at OpinionShare" );
 	}
 	
 }
